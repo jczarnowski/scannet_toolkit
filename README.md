@@ -10,6 +10,9 @@ Clone the repo recursively:
 git clone --recurse-submodules git@github.com:jczarnowski/scannet_toolkit.git
 ```
 
+Obtain the `download-scannet.py` following the instructions from [the authors' website](http://www.scan-net.org/ScanNet/#scannet-c-toolkit)
+and place it in the repo root directory.
+
 ## Usage
 
 #### Sampling
