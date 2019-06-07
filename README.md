@@ -1,7 +1,7 @@
 # scannet_toolkit
 
 Scripts for downloading a smaller random sample of the [ScanNet](http://www.scan-net.org/ScanNet/) dataset 
-and generate depth maps from the PLY models of the scenes.
+and generating depth maps from the PLY models of the scenes.
 
 ## Installation
 Clone the repo recursively:
@@ -39,7 +39,7 @@ The `render.py` script uses the trajectory and the scene PLY models to render co
 python render.py --data_dir <out_dir>
 ```
 
-The rendered depth and normals are saved alongside the images:
+Rendered depth and normals are saved alongside the images:
 ```
 <sceneid>/frame-XXXXXX.rendered_depth.png
 <sceneid>/frame-XXXXXX.rendered_normal.npy
