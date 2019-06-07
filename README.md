@@ -33,6 +33,18 @@ The script currently only pulls and decodes the `.sens` files and the `_vh_clean
 #### Preprocessing
 The `preprocess.py` script is WIP and resizes the images to 640x480 and convers pgm to png concurrently.
 
+### Rendering
+The `render.py` script uses the trajectory and the scene PLY models to render completed depth maps and normals. Example usage:
+```
+python render.py --data_dir <out_dir>
+```
+
+The rendered depth and normals are saved alongside the images:
+```
+<sceneid>/frame-XXXXXX.rendered_depth.png
+<sceneid>/frame-XXXXXX.rendered_normal.npy
+```
+
 ## Authors
  * Jan Czarnowski
  * Ronald Clark
