@@ -67,11 +67,9 @@ def LoadPly(filename, computeNormals=True, autoScale=False):
     vertices = np.stack([plydata['vertex']['x'],plydata['vertex']['y'],plydata['vertex']['z']],axis=1).astype(np.float32)
     faces = np.transpose(np.stack(plydata['face']['vertex_indices']),[0,1]).astype(np.uint32)
 
-    print(faces.shape)
     #normals = np.stack([plydata['vertex']['nx'],plydata['vertex']['ny'],plydata['vertex']['nz']],axis=1).astype(np.float32)
     normals = None
     if computeNormals:
-        from utils import ComputeNormals
         normals = ComputeNormals(vertices,faces)
 
     geometry = Geometry(vertices, triangles=faces, normals=normals,autoScale=autoScale)
@@ -82,35 +80,36 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', required=True)
     args = parser.parse_args()
 
+    import tqdm
+
     # look up all scene directories
-    scene_dirs = glob.glob(os.path.join(args.data_dir, '*/'))
+    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
     print('Found {} scenes'.format(len(scene_dirs)))
 
     viewer = PyGLer(useFBO=True)
     viewer.start()
-    for scenedir in scene_dirs:
-        scenename = os.path.basename(os.path.normpath(scenedir))
+    for scene_num, scene_dir in enumerate(scene_dirs):
+        scenename = os.path.basename(os.path.normpath(scene_dir))
 
-        print('Rendering ', scenename)
-        tri = PyGLerModel.LoadPly(os.path.join(scene_dir, '{}_vh_clean_2.ply'.format(scene_dir, scenename)), autoScale=False)
+        print('Rendering {} [{}/{}]'.format(scenename, scene_num, len(scene_dirs)))
+        tri = LoadPly(os.path.join(scene_dir, '{}_vh_clean_2.ply'.format(scenename)), autoScale=False)
         viewer.addModel(tri)
         
         # check trajectory length
-        n = len(glob.glob(os.path.join(scenedir, '*.color.jpg')))
-        print('Trajectory length is ', n)
+        n = len(glob.glob(os.path.join(scene_dir, '*.color.jpg')))
 
-        for i in range(0,n):
-            pose = np.loadtxt(os.path.join(scenedir, 'frame-{:06d}.pose.txt'.format(i)))
+        for i in tqdm.tqdm(range(0,n)):
+            pose = np.loadtxt(os.path.join(scene_dir, 'frame-{:06d}.pose.txt'.format(i)))
             tri.setModelM(np.linalg.inv(pose))
             
             depth, bgr = viewer.Convert2BGRD(viewer.capture())
+            bgr = bgr.astype(np.float32)
 
-            # do we want resizing here? then do rgb too
-            #bgr = cv2.resize(bgr,(256,192),interpolation=cv2.INTER_NEAREST)
-            #depth = cv2.resize(depth,(256,192),interpolation=cv2.INTER_NEAREST)
+            bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.npy'.format(i))
+            depth_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(i))
 
-            np.save(os.path.join(scene_dir, 'rendered_normal_{:06d}.npy'.format(i)), bgr.astype(np.float32))
-            np.save(os.path.join(scene_dir, 'rendered_depth_{:06d}.npy'.format(i)), depth)
+            np.save(bgr_file, bgr)
+            cv2.imwrite(depth_file, depth)
 
             viewer.redraw()
             
