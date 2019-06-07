@@ -5,7 +5,7 @@ sys.path.insert(0,'./PyGLer/src/pygler/gui')
 #from utils import ComputeNormals
 import pygler
 from pygler.viewer import *
-from pygler.utils import CreateAxisModel, CreateCubeModel, ComputeNormals
+from pygler.utils import CreateAxisModel, CreateCubeModel, ComputeNormals, CameraParams
 
 import os
 import cv2
@@ -86,7 +86,8 @@ if __name__ == '__main__':
     scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
     print('Found {} scenes'.format(len(scene_dirs)))
 
-    viewer = PyGLer(useFBO=True)
+    camParams = CameraParams(width=640,height=480,cx=318.9054,cy=242.68360,fx=577.59069,fy=578.7297,znear=1.0,zfar=10000.0,unit=1.0)
+    viewer = PyGLer(useFBO=True, cameraParams=camParams)
     viewer.start()
     for scene_num, scene_dir in enumerate(scene_dirs):
         scenename = os.path.basename(os.path.normpath(scene_dir))
