@@ -86,7 +86,7 @@ if __name__ == '__main__':
     scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
     print('Found {} scenes'.format(len(scene_dirs)))
 
-    camParams = CameraParams(width=640,height=480,cx=318.9054,cy=242.68360,fx=577.59069,fy=578.7297,znear=1.0,zfar=10000.0,unit=1.0)
+    camParams = CameraParams(width=640,height=480,cx=319.500000,cy=239.500000,fx=571.623718,fy=571.623718,znear=1.0,zfar=10000.0,unit=1.0)
     viewer = PyGLer(useFBO=True, cameraParams=camParams)
     viewer.start()
     for scene_num, scene_dir in enumerate(scene_dirs):
