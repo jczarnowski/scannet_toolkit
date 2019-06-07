@@ -56,6 +56,27 @@ void main() {
 }
 """
 
+def LoadPly(filename, computeNormals=True, autoScale=False):
+    '''
+    Load vertices and faces from a wavefront .obj file and generate normals.
+    '''
+    from plyfile import PlyData, PlyElement
+    plydata = PlyData.read(filename)
+
+    # Get vertices and faces
+    vertices = np.stack([plydata['vertex']['x'],plydata['vertex']['y'],plydata['vertex']['z']],axis=1).astype(np.float32)
+    faces = np.transpose(np.stack(plydata['face']['vertex_indices']),[0,1]).astype(np.uint32)
+
+    print(faces.shape)
+    #normals = np.stack([plydata['vertex']['nx'],plydata['vertex']['ny'],plydata['vertex']['nz']],axis=1).astype(np.float32)
+    normals = None
+    if computeNormals:
+        from utils import ComputeNormals
+        normals = ComputeNormals(vertices,faces)
+
+    geometry = Geometry(vertices, triangles=faces, normals=normals,autoScale=autoScale)
+    return PyGLerModel(filename, geometry)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', required=True)
