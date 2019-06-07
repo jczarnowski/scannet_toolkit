@@ -3,4 +3,4 @@
 	url = https://github.com/ScanNet/ScanNet
 [submodule "PyGLer"]
 	path = PyGLer
-	url = git@github.com:padeler/PyGLer
+	url = https://github.com/padeler/PyGLer.git

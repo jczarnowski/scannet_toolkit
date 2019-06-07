@@ -7,7 +7,7 @@ and generate depth maps from the PLY models of the scenes.
 Clone the repo recursively:
 
 ```
-git clone --recurse-submodules git@github.com:jczarnowski/scannet_toolkit.git
+git clone --recurse-submodules https://github.com/jczarnowski/scannet_toolkit.git
 ```
 
 Obtain the `download-scannet.py` following the instructions from [the authors' website](http://www.scan-net.org/ScanNet/#scannet-c-toolkit)
