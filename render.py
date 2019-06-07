@@ -4,15 +4,13 @@ sys.path.insert(0,'./PyGLer/src/pygler/gui')
 
 #from utils import ComputeNormals
 import pygler
-from pygler.viewer import *
-from pygler.utils import CreateAxisModel, CreateCubeModel, ComputeNormals, CameraParams
 
 import os
 import cv2
 import glob
 import argparse
 
-VertexShaderCode = \
+pygler.VertexShaderCode = \
 """
 #version 130
 uniform vec4 singleColor;
@@ -42,7 +40,7 @@ void main() {
 """
 
 
-FragmentShaderCode = \
+pygler.FragmentShaderCode = \
 """
 #version 130
 in vec4 vcolor;
@@ -55,6 +53,9 @@ void main() {
 
 }
 """
+
+from pygler.viewer import *
+from pygler.utils import CreateAxisModel, CreateCubeModel, ComputeNormals, CameraParams
 
 def LoadPly(filename, computeNormals=True, autoScale=False):
     '''
@@ -83,12 +84,19 @@ if __name__ == '__main__':
     import tqdm
 
     # look up all scene directories
-    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
+    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))[0::2]
+
     print('Found {} scenes'.format(len(scene_dirs)))
 
     camParams = CameraParams(width=640,height=480,cx=319.500000,cy=239.500000,fx=571.623718,fy=571.623718,znear=1.0,zfar=10000.0,unit=1.0)
     viewer = PyGLer(useFBO=True, cameraParams=camParams)
     viewer.start()
+
+    #with viewer.lock:
+    #    viewer.shader = Shader(VertexShaderCode,  FragmentShaderCode)
+    #    viewer.shader.bind()
+    #    viewer.shader.uniform_matrixf("projM", projMat)
+
     for scene_num, scene_dir in enumerate(scene_dirs):
         scenename = os.path.basename(os.path.normpath(scene_dir))
 
@@ -103,15 +111,18 @@ if __name__ == '__main__':
             pose = np.loadtxt(os.path.join(scene_dir, 'frame-{:06d}.pose.txt'.format(i)))
             tri.setModelM(np.linalg.inv(pose))
             
-            depth, bgr = viewer.Convert2BGRD(viewer.capture())
-            bgr = bgr.astype(np.float32)
+            viewer.redraw()
 
-            bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.npy'.format(i))
+            depth, bgr = viewer.Convert2BGRD(viewer.capture())
+            bgr = (bgr * np.iinfo(np.uint16).max).astype(np.uint16)
+
+            bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i))
             depth_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(i))
 
-            np.save(bgr_file, bgr)
+            cv2.imwrite(bgr_file, bgr)
             cv2.imwrite(depth_file, depth)
 
-            viewer.redraw()
+        viewer.removeAll()
+            
             
 viewer.removeModel(tri)
