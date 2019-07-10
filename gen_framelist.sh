@@ -7,7 +7,7 @@ if [ "$#" -ne 1 ]; then
   exit
 fi
 
-for seqdir in $dir/*; do
+for seqdir in $dir/*/; do
   echo "Processing $seqdir"
   ls $seqdir | grep jpg | sort > $seqdir/frames.txt
 done
