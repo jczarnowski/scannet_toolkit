@@ -48,6 +48,7 @@ void main() {
 from pygler.viewer import *
 from pygler.utils import CreateAxisModel, CreateCubeModel, ComputeNormals, CameraParams
 
+
 def LoadPly(filename, computeNormals=True, autoScale=False):
     '''
     Load vertices and faces from a wavefront .obj file and generate normals.
@@ -67,6 +68,7 @@ def LoadPly(filename, computeNormals=True, autoScale=False):
     geometry = Geometry(vertices, triangles=faces, normals=normals,autoScale=autoScale)
     return PyGLerModel(filename, geometry)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', required=True)
@@ -82,11 +84,6 @@ if __name__ == '__main__':
     camParams = CameraParams(width=640,height=480,cx=319.500000,cy=239.500000,fx=571.623718,fy=571.623718,znear=0.001,zfar=10000.0,unit=1.0)
     viewer = PyGLer(useFBO=True, cameraParams=camParams)
     viewer.start()
-
-    #with viewer.lock:
-    #    viewer.shader = Shader(VertexShaderCode,  FragmentShaderCode)
-    #    viewer.shader.bind()
-    #    viewer.shader.uniform_matrixf("projM", projMat)
 
     for scene_num, scene_dir in enumerate(scene_dirs):
         scenename = os.path.basename(os.path.normpath(scene_dir))
@@ -104,7 +101,9 @@ if __name__ == '__main__':
             
             viewer.redraw()
 
-            depth, bgr = viewer.Convert2BGRD(viewer.capture())
+            depth, bgr = viewer.capture()
+
+            depth = (depth * 1000.0).astype(np.uint16)
             bgr = (bgr * np.iinfo(np.uint16).max).astype(np.uint16)
 
             bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i))
