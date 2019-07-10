@@ -34,8 +34,6 @@ The script currently only pulls and decodes the `.sens` files and the `_vh_clean
 The `preprocess.py` script is WIP and resizes the images to 640x480 and convers pgm to png concurrently.
 
 ### Rendering
-** There's a bug in the shader rendering the normals, will fix it once we have time **
-
 The `render.py` script uses the trajectory and the scene PLY models to render completed depth maps and normals. Example usage:
 ```
 python render.py --data_dir <out_dir>

@@ -12,7 +12,7 @@ import argparse
 
 pygler.VertexShaderCode = \
 """
-#version 130
+#version 140
 uniform vec4 singleColor;
 uniform mat4 projM;
 uniform mat4 viewM;
@@ -22,20 +22,11 @@ in vec4 color;
 out vec4 vcolor;
 out vec4 vposition;
 void main() {
-    mat3 modelM_rot = mat3(modelM);
-    
-    gl_Position = projM * viewM * modelM * position;
-    vposition = gl_Position;
-    if(singleColor.x==-1.0)
-    {
-        vec3 vcolor_ = (modelM_rot*color.rgb+1.0)/2.0;
-        vcolor.rgb = vcolor_;
-        vcolor.a = 1.0;
-    }
-    else
-    {
-        vcolor = singleColor;
-    }
+    mat4 VM = viewM * modelM;
+    vposition = projM * VM * position;
+    vec3 out_col = (mat3(VM) * (color.rgb * 2 - 1) + 1) / 2.0;
+    vcolor = vec4(out_col, 1.0);
+    gl_Position = vposition;
 }
 """
 
