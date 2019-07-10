@@ -77,7 +77,7 @@ if __name__ == '__main__':
     import tqdm
 
     # look up all scene directories
-    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
+    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))[0::2]
 
     print('Found {} scenes'.format(len(scene_dirs)))
 
@@ -101,10 +101,9 @@ if __name__ == '__main__':
             
             viewer.redraw()
 
-            depth, bgr = viewer.capture()
-
-            depth = (depth * 1000.0).astype(np.uint16)
-            bgr = (bgr * np.iinfo(np.uint16).max).astype(np.uint16)
+            rgba, xyzw = viewer.capture()
+            bgr = (rgba[:, :, 2::-1] * np.iinfo(np.uint16).max).astype(np.uint16)
+            depth = (xyzw[:, :, 3] * 1000.0).astype(np.uint16)
 
             bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i))
             depth_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(i))
