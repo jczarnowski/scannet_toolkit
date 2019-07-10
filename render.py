@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     print('Found {} scenes'.format(len(scene_dirs)))
 
-    camParams = CameraParams(width=640,height=480,cx=319.500000,cy=239.500000,fx=571.623718,fy=571.623718,znear=1.0,zfar=10000.0,unit=1.0)
+    camParams = CameraParams(width=640,height=480,cx=319.500000,cy=239.500000,fx=571.623718,fy=571.623718,znear=0.001,zfar=10000.0,unit=1.0)
     viewer = PyGLer(useFBO=True, cameraParams=camParams)
     viewer.start()
 
