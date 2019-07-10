@@ -24,7 +24,7 @@ out vec4 vposition;
 void main() {
     mat4 VM = viewM * modelM;
     vposition = projM * VM * position;
-    vec3 out_col = (mat3(VM) * (color.rgb * 2 - 1) + 1) / 2.0;
+    vec3 out_col = (mat3(VM) * -(color.rgb * 2 - 1) + 1) / 2.0;
     vcolor = vec4(out_col, 1.0);
     gl_Position = vposition;
 }
