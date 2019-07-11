@@ -77,7 +77,7 @@ if __name__ == '__main__':
     import tqdm
 
     # look up all scene directories
-    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))[0::2]
+    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
 
     print('Found {} scenes'.format(len(scene_dirs)))
 
