@@ -78,7 +78,6 @@ if __name__ == '__main__':
 
     # look up all scene directories
     scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
-    scene_dirs = ['/datasets/scannet_small/train/scene0703_00']
 
     print('Found {} scenes'.format(len(scene_dirs)))
 
