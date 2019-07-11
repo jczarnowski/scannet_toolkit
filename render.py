@@ -77,7 +77,8 @@ if __name__ == '__main__':
     import tqdm
 
     # look up all scene directories
-    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))[0::2]
+    scene_dirs = sorted(glob.glob(os.path.join(args.data_dir, '*/')))
+    scene_dirs = ['/datasets/scannet_small/train/scene0703_00']
 
     print('Found {} scenes'.format(len(scene_dirs)))
 
@@ -88,15 +89,15 @@ if __name__ == '__main__':
     for scene_num, scene_dir in enumerate(scene_dirs):
         scenename = os.path.basename(os.path.normpath(scene_dir))
 
-        print('Rendering {} [{}/{}]'.format(scenename, scene_num, len(scene_dirs)))
+        print('[{}/{}] Rendering {}'.format(scene_num+1, len(scene_dirs), scenename))
         tri = LoadPly(os.path.join(scene_dir, '{}_vh_clean_2.ply'.format(scenename)), autoScale=False)
         viewer.addModel(tri)
         
         # check trajectory length
         n = len(glob.glob(os.path.join(scene_dir, '*.color.jpg')))
 
-        for i in tqdm.tqdm(range(0,n)):
-            pose = np.loadtxt(os.path.join(scene_dir, 'frame-{:06d}.pose.txt'.format(i)))
+        for i in tqdm.tqdm(range(1,n+1)):
+            pose = np.loadtxt(os.path.join(scene_dir, 'frame-{:06d}.pose.txt'.format(i-1)))
             tri.setModelM(np.linalg.inv(pose))
             
             viewer.redraw()
@@ -105,13 +106,11 @@ if __name__ == '__main__':
             bgr = (rgba[:, :, 2::-1] * np.iinfo(np.uint16).max).astype(np.uint16)
             depth = (xyzw[:, :, 3] * 1000.0).astype(np.uint16)
 
-            bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i))
-            depth_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(i))
+            bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i-1))
+            depth_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(i-1))
 
             cv2.imwrite(bgr_file, bgr)
             cv2.imwrite(depth_file, depth)
 
         viewer.removeAll()
-            
-            
-viewer.removeModel(tri)
+    viewer.stop()
