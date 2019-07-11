@@ -55,3 +55,4 @@ Depth is in milimeters and normals are converted to be in range `[0,1]` with: `o
 ## Authors
  * Jan Czarnowski
  * Ronald Clark
+ * Tristan Laidlow
