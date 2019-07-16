@@ -27,6 +27,9 @@ function download_scene_images {
   _scene_id=$1
   _out_dir=$2
 
+  # skip if images have been already downloaded
+
+
   yes | $python download-scannet.py -o . --id ${_scene_id} --type .sens &>> $logfile || return
 
   # decompress .sens file
@@ -38,10 +41,20 @@ function download_scene_images {
 function download_scene_ply {
   _scene_id=$1
   _out_dir=$2
+  _ply_name="${_scene_id}_vh_clean_2.ply"
+  _ply_dest="${_out_dir}/${_scene_id}/${_ply_name}"
+
+  # skip download if it already exist
+  if [[ -f "${_ply_dest}" ]]; then
+    return
+  fi
+
+  # run download with the download-scannet.py utility
+  # it will place the model into scans/<sceneid>/ directory
   yes | $python download-scannet.py -o .  --id ${_scene_id} --type _vh_clean_2.ply &>> $logfile || return
 
   # move the downloaded ply into proper scene directory
-  mv "scans/${_scene_id}/${_scene_id}_vh_clean_2.ply" "${_out_dir}/${_scene_id}/" || return
+  mv "scans/${_scene_id}/${_ply_name}" "${_out_dir}/${_scene_id}/" || return
 }
 
 # Ensure the reader is compiled
@@ -90,7 +103,10 @@ echo "Downloading data for $num_scenes scenes"
 i=0
 while read scene; do
   progress_bar ${i} ${num_scenes}
-  download_scene_images ${scene} ${out_dir} || die "Failed to download images for scene ${scene}"
+
+  if [[ ! -d ${out_dir}/${scene} ]]; then
+    download_scene_images ${scene} ${out_dir} || die "Failed to download images for scene ${scene}"
+  fi
   download_scene_ply ${scene} ${out_dir} || die "Failed to download model for scene ${scene}"
 
   # clear the downloaded files
