@@ -72,6 +72,7 @@ def LoadPly(filename, computeNormals=True, autoScale=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', required=True)
+    parser.add_argument('--save_normals', default=False, action='store_true')
     args = parser.parse_args()
 
     import tqdm
@@ -88,13 +89,23 @@ if __name__ == '__main__':
     for scene_num, scene_dir in enumerate(scene_dirs):
         scenename = os.path.basename(os.path.normpath(scene_dir))
 
+        # check trajectory length
+        with open(os.path.join(scene_dir, '_info.txt')) as f:
+            n = int(f.readlines()[-1].split(' ')[-1])
+        #n = len(glob.glob(os.path.join(scene_dir, '*.color.jpg')))
+
+        depth_done = os.path.exists(os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(n-1)))
+        normals_done = os.path.exists(os.path.join(scene_dir, 'frame-{:06d}.rendered_normals.png'.format(n-1)))
+        if depth_done and (normals_done or not args.save_normals):
+            print 'Skipping scene', scenename, 'as it is already rendered'
+            continue
+
         print('[{}/{}] Rendering {}'.format(scene_num+1, len(scene_dirs), scenename))
+
+        # load and display the model
         tri = LoadPly(os.path.join(scene_dir, '{}_vh_clean_2.ply'.format(scenename)), autoScale=False)
         viewer.addModel(tri)
         
-        # check trajectory length
-        n = len(glob.glob(os.path.join(scene_dir, '*.color.jpg')))
-
         for i in tqdm.tqdm(range(1,n+1)):
             pose = np.loadtxt(os.path.join(scene_dir, 'frame-{:06d}.pose.txt'.format(i-1)))
             tri.setModelM(np.linalg.inv(pose))
@@ -102,14 +113,15 @@ if __name__ == '__main__':
             viewer.redraw()
 
             rgba, xyzw = viewer.capture()
-            bgr = (rgba[:, :, 2::-1] * np.iinfo(np.uint16).max).astype(np.uint16)
+
             depth = (xyzw[:, :, 3] * 1000.0).astype(np.uint16)
-
-            bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i-1))
             depth_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_depth.png'.format(i-1))
-
-            cv2.imwrite(bgr_file, bgr)
             cv2.imwrite(depth_file, depth)
+
+            if args.save_normals:
+                bgr = (rgba[:, :, 2::-1] * np.iinfo(np.uint16).max).astype(np.uint16)
+                bgr_file = os.path.join(scene_dir, 'frame-{:06d}.rendered_normal.png'.format(i-1))
+                cv2.imwrite(bgr_file, bgr)
 
         viewer.removeAll()
     viewer.stop()
