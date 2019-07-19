@@ -1,33 +1,35 @@
 import os
-import glob
+import sys
+import argparse
 import multiprocessing
+import subprocess
 
-folder = 'train'
 
-def convert_to_jpg(rgb_file):
-    print('Processing file {}'.format(rgb_file))
-    command = 'mogrify -format jpg -resize 640x480 {}'.format(rgb_file)
-    print(command)
-    os.system(command)
+def preprocess_rgb(sequence):
+    sys.stderr.write(('Processing sequence {}\n'.format(sequence)))
+    command = 'imgp -x 640x480 -wf {}/*.color.jpg'.format(sequence)
+    subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, check=True)
 
-def convert_to_png(dpt_file):
-    print('Processing file {}'.format(dpt_file))
-    command = 'mogrify -format png -resize 640x480 {}'.format(dpt_file)
-    print(command)
-    os.system(command)
 
 def main():
-    print("globbing all pgms")
-    jpg_files = glob.iglob(os.path.join(folder,'**/*.jpg'), recursive=True)
-    png_files = glob.iglob(os.path.join(folder,'**/*.png'), recursive=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', help='Path to directory containing sequences to preprocess', required=True)
+    parser.add_argument('--nproc', default=8, help='Number of processes to spawn')
+    args = parser.parse_args()
+
+    print("Finding all sequences to process")
+    sequences = next(os.walk(args.data_dir))[1]
+    sequences.sort()
+    sequences = [os.path.join(args.data_dir, seq) for seq in sequences]
 
     print('Preprocess start')
-    pool = multiprocessing.Pool(processes=12)
-    #pool.map(convert_to_png, png_files)
-    pool.map(convert_to_jpg, jpg_files)
+    pool = multiprocessing.Pool(processes=args.nproc)
+    pool.map(preprocess_rgb, sequences)
+
     pool.close()
     pool.join()   
-    print('done')
+    print('Done')
+
 
 if __name__ == "__main__":
     main()
