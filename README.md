@@ -46,7 +46,7 @@ The script currently only pulls and decodes the `.sens` files and the `_vh_clean
 #### Preprocessing colour images
 The `preprocess.py` script is a WIP and resizes the images to 640x480.
 
-### Rendering depth from models
+#### Rendering depth from models
 The `render.py` script uses the trajectory and the scene PLY models to render completed depth maps and normals. Example usage:
 ```
 python render.py --data_dir <out_dir>
@@ -60,7 +60,7 @@ Rendered depth and normals are saved alongside the images:
 
 Depth is in milimeters and normals are converted to be in range `[0,1]` with: `out_normal = (in_normal + 1) / 2.0`
 
-### Merging rendered and raw depth
+#### Merging rendered and raw depth
 The `merge_depths.py` script reads in the rendered and the raw depth maps and combines them together into a single image and saves it alongside:
 ```
 <sceneid>/frame-XXXXXX.rendered_depth.png
