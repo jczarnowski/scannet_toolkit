@@ -1,7 +1,13 @@
 # scannet_toolkit
 
+
+
 Scripts for downloading a smaller random sample of the [ScanNet](http://www.scan-net.org/ScanNet/) dataset 
 and generating depth maps from the PLY models of the scenes.
+
+## Important notes
+
+ * PyGLer encodes missing values as having 1m depth (it's a byproduct of setting the clear color to 1). We fix that only in the merge script. Watch out for that
 
 ## Installation
 Clone the repo recursively:
