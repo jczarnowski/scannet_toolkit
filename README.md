@@ -16,8 +16,7 @@ Clone the repo recursively:
 git clone --recurse-submodules https://github.com/jczarnowski/scannet_toolkit.git
 ```
 
-Obtain the `download-scannet.py` following the instructions from [the authors' website](http://www.scan-net.org/ScanNet/#scannet-c-toolkit)
-and place it in the repo root directory.
+Obtain the `download-scannet.py` by requesting access to the dataset and following the instructions from [the authors' website](https://github.com/ScanNet/ScanNet#scannet-data). Place this script in the root directory of this repository.
 
 ## Usage
 
