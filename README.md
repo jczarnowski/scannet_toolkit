@@ -9,6 +9,9 @@ and generating depth maps from the PLY models of the scenes.
 
  * PyGLer encodes missing values as having 1m depth (it's a byproduct of setting the clear color to 1). We fix that only in the merge script. Watch out for that
 
+## Dependencies
+  * bc
+
 ## Installation
 Clone the repo recursively:
 
